@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaHost.Service", "MediaH
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaHost.Repository", "MediaHost.Repository\MediaHost.Repository.csproj", "{A8BA9486-CE26-4DF1-8E0F-6277C179509C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaHost.Infrastructure", "MediaHost.Infrastructure\MediaHost.Infrastructure.csproj", "{D60DDFF8-88C3-4797-884E-5289CDCBA04A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{A8BA9486-CE26-4DF1-8E0F-6277C179509C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8BA9486-CE26-4DF1-8E0F-6277C179509C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8BA9486-CE26-4DF1-8E0F-6277C179509C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D60DDFF8-88C3-4797-884E-5289CDCBA04A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D60DDFF8-88C3-4797-884E-5289CDCBA04A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D60DDFF8-88C3-4797-884E-5289CDCBA04A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D60DDFF8-88C3-4797-884E-5289CDCBA04A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
