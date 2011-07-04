@@ -31,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DeployIisAppPath>MediaHost_Live</DeployIisAppPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework">
