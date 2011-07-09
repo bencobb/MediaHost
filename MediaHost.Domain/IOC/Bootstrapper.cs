@@ -10,7 +10,7 @@ namespace MediaHost.Domain.IOC
         {
             ObjectFactory.Initialize(x =>
             {
-                x.AddRegistry(new RepositoryRegistry());
+                x.AddRegistry(new MainRegistry());
             });
         }
 

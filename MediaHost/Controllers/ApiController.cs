@@ -3,16 +3,19 @@ using System.Web;
 using System.Web.Mvc;
 using MediaHost.Domain.Models;
 using MediaHost.Domain.Repository;
+using MediaHost.Domain.Storage;
 
 namespace MediaHost.Controllers
 {
     public class ApiController : BaseController
     {
         private readonly IDbRepository _dbRepository;
+        private readonly IStorage _storage;
 
-        public ApiController(IDbRepository entityRepository)
+        public ApiController(IDbRepository entityRepository, IStorage storage)
         {
             _dbRepository = entityRepository;
+            _storage = storage;
         }
 
         public string Index()
@@ -24,18 +27,17 @@ namespace MediaHost.Controllers
         {
             if(IsValid(entity))
             {
-                entity = _dbRepository.InsertEntity(entity);
+                entity = _dbRepository.Insert(entity);
             }
 
             return ContentResult(entity);
         }
 
-
         public ContentResult AddGroup(Group group)
         {
             if (IsValid(group))
             {
-                group = _dbRepository.InsertGroup(group);
+                group = _dbRepository.Insert(group);
             }
 
             return ContentResult(group);
@@ -45,7 +47,7 @@ namespace MediaHost.Controllers
         {
             if (IsValid(playlist))
             {
-                playlist = _dbRepository.InsertPlaylist(playlist);
+                playlist = _dbRepository.Insert(playlist);
             }
 
             return ContentResult(playlist);
@@ -60,7 +62,10 @@ namespace MediaHost.Controllers
 
             if (IsValid(mediaFile))
             {
-                mediaFile = _dbRepository.InsertFile(mediaFile);
+                string relativePath = _storage.StoreFile(file.InputStream);
+                
+                mediaFile.RelativeFilePath = relativePath;
+                mediaFile = _dbRepository.Insert(mediaFile);
             }
 
             return ContentResult(mediaFile);

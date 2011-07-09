@@ -1,0 +1,33 @@
+﻿@using MediaHost.Helpers;
+@using MediaHost.Models;
+
+@{
+    ViewBag.Title = "Metrics";
+}
+
+<h2>Site Performance Metrics</h2>
+
+<table>
+    <tr>
+        <td>Controller</td>
+        <td>Action</td>
+        <td>TotalRequests</td>
+        <td>AverageLatency</td>
+        <td>TotalExceptions</td>
+    </tr>
+    @{
+        var actionList = PerformanceCounter.GetActionMetrics().OrderByDescending(o => o.AverageLatency);
+    }
+
+    @foreach (var action in actionList)
+    {
+        <tr>
+            <td>@action.ControllerName</td>
+            <td>@action.ActionName</td>
+            <td>@action.TotalRequests</td>
+            <td>@action.AverageLatency</td>
+            <td>@action.TotalExceptions</td>
+        </tr>
+
+    }
+</table>

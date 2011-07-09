@@ -6,11 +6,14 @@ using System.Text;
 
 namespace MediaHost.Domain.Models
 {
-    public class Entity
+    public class Entity : IActiveRecord
     {
-        public int Id { get; set; }
+        [Key]
+        public long Id { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Exception: Entity Name is Required")]
         public string Name { get; set; }
+
+        
     }
 }

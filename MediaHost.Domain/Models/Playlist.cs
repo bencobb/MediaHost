@@ -6,10 +6,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MediaHost.Domain.Models
 {
-    public class Playlist
+    public class Playlist : IActiveRecord
     {
-        public int Id { get; set; }
-        
+        [Key]
+        public long Id { get; set; }
+
         [Range(1, int.MaxValue, ErrorMessage = "Exception: EntityId Required")]
         public int EntityId { get; set; }
         
