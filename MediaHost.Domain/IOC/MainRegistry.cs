@@ -16,6 +16,7 @@ namespace MediaHost.Domain.IOC
             For<IDbConnection>()
                 .Use<MySqlConnection>().SetValue(typeof(string), ConfigurationManager.ConnectionStrings["MySql"].ConnectionString, CannotFindProperty.ThrowException);
             For<IStorage>().Use<StorageS3>();
+            
         }
     }
 }
