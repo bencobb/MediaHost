@@ -7,6 +7,7 @@
 
 <h2>Site Performance Metrics</h2>
 
+<h4>Average by controller/action</h4>
 <table>
     <tr>
         <td>Controller</td>
@@ -27,6 +28,31 @@
             <td>@action.TotalRequests</td>
             <td>@action.AverageLatency</td>
             <td>@action.TotalExceptions</td>
+        </tr>
+
+    }
+</table>
+
+
+<h4>Busy Queue</h4>
+<table>
+    <tr>
+        <td>Controller</td>
+        <td>Action</td>
+        <td>User</td>
+        <td>Seconds</td>
+    </tr>
+    @{
+        var busyQueue = PerformanceCounter.BusyQueue.Values.OrderBy(o => o.Timestamp);
+    }
+
+    @foreach (var busy in busyQueue)
+    {
+        <tr>
+            <td>@busy.Controller</td>
+            <td>@busy.Action</td>
+            <td>@busy.User</td>
+            <td>@DateTime.Now.Subtract(busy.Timestamp).TotalSeconds</td>
         </tr>
 
     }

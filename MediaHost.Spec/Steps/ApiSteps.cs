@@ -110,12 +110,9 @@ namespace MediaHost.Spec.Steps
         [Then(@"I call AddEntity")]
         public void ThenICallAddEntity()
         {
-            //_mockIDbRepository.Setup(m => m.Insert(_entity)).Returns(new Entity { Id = 1, Name = _entity.Name });
-            //var contentResult = _apiController.AddEntity(_entity);
+            _mockIDbRepository.Setup(m => m.Insert(_entity)).Returns(new Entity { Id = 1, Name = _entity.Name });
+            var contentResult = _apiController.AddEntity(_entity);
 
-            ApiController _cont = new ApiController(new DbRepository(new MySqlConnection()), _mockStorage.Object);
-            var contentResult = _cont.AddEntity(_entity);
-            
             LoadObject<Entity>(contentResult, ref _entity);
         }
 
@@ -169,5 +166,13 @@ namespace MediaHost.Spec.Steps
 
 
         #endregion
+
+        [Given(@"I have an empty")]
+        public void GivenIHaveAnEmpty()
+        {
+            ScenarioContext.Current.Pending();
+        }
+
+
     }
 }

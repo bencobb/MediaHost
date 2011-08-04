@@ -219,6 +219,27 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             testRunner.CollectScenarioErrors();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Test")]
+        public virtual void Test()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Test", ((string[])(null)));
+#line 59
+this.ScenarioSetup(scenarioInfo);
+#line 60
+ testRunner.Given("I have an empty");
+#line 61
+ testRunner.When("jlkjl");
+#line 62
+  testRunner.And("lkjlkjlk");
+#line 63
+ testRunner.Then("lkjlkj");
+#line 64
+  testRunner.And("lkjlkdsdf");
+#line hidden
+            testRunner.CollectScenarioErrors();
+        }
     }
 }
 #endregion

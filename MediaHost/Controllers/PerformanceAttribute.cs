@@ -17,16 +17,21 @@ namespace MediaHost.Controllers
         private string _userName;
         private string _ip;
         private Stopwatch _stopWatch;
+        private string _busyKey;
 
         public void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            
             _stopWatch = Stopwatch.StartNew();
 
             _actionName = filterContext.ActionDescriptor.ActionName;
             _controllerName = filterContext.Controller.GetType().Name;
             
             _userName = "temp";
-            _ip = filterContext.HttpContext.Request.UserHostAddress;    
+            _ip = filterContext.HttpContext.Request.UserHostAddress;
+
+            _busyKey = Guid.NewGuid().ToString("N");
+            PerformanceCounter.LogBusyQueue(_busyKey, _actionName, _controllerName, _userName);
         }
 
         public void OnActionExecuted(ActionExecutedContext filterContext)
@@ -42,7 +47,8 @@ namespace MediaHost.Controllers
         public void OnResultExecuted(ResultExecutedContext filterContext)
         {
             long latencyMilliseconds = _stopWatch.ElapsedMilliseconds;
-            
+
+            PerformanceCounter.RemoveFromBusyQueue(_busyKey);
             PerformanceCounter.Log(_controllerName, _actionName, _userName, _ip, latencyMilliseconds, false);
         }
 

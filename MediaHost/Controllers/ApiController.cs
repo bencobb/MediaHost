@@ -20,6 +20,11 @@ namespace MediaHost.Controllers
 
         public string Index()
         {
+            bool t = true;
+            while(t)
+            {
+                System.Threading.Thread.Sleep(2000);
+            }
             return "";
         }
 
