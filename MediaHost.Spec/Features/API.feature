@@ -55,3 +55,10 @@ Scenario: Add File
 	Then I call AddFile
 		And the file should be added to the db and return with an Id
 		And the file should be added to the IO system
+
+Scenario: Test
+	Given I have an empty 
+	When jlkjl
+		And lkjlkjlk
+	Then lkjlkj
+		And lkjlkdsdf

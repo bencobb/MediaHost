@@ -14,6 +14,12 @@ namespace MediaHost.Helpers
             get { return _metrics; }
         }
 
+        private static Dictionary<string, BusyMetric> _busyQueue = new Dictionary<string, BusyMetric>();
+        public static Dictionary<string, BusyMetric> BusyQueue
+        {
+            get { return _busyQueue; }
+        }
+
         public static List<ActionMetric> GetActionMetrics()
         {
             var retval = new List<ActionMetric>();
@@ -66,6 +72,25 @@ namespace MediaHost.Helpers
             }
             return metric;
         }
+
+        internal static void LogBusyQueue(string busyKey, string actionName, string controllerName, string userName)
+        {
+            var busyMetric = new BusyMetric {Action = actionName, Controller = controllerName, Timestamp = DateTime.Now, User = userName};
+            _busyQueue.Add(busyKey, busyMetric);
+        }
+
+        internal static void RemoveFromBusyQueue(string busyKey)
+        {
+            _busyQueue.Remove(busyKey);
+        }
+    }
+
+    public class BusyMetric
+    {
+        public string Controller { get; set; }
+        public string Action { get; set; }
+        public string User { get; set; }
+        public DateTime Timestamp { get; set; }
     }
 
     public class PerformanceMetric
