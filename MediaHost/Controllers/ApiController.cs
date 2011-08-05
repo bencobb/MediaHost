@@ -30,6 +30,8 @@ namespace MediaHost.Controllers
 
         public ContentResult AddEntity (Entity entity)
         {
+            string id = MediaHost.Domain.Helper.AppConfig.AWS_Id;
+
             if(IsValid(entity))
             {
                 entity = _dbRepository.Insert(entity);

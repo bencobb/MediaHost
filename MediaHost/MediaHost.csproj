@@ -152,7 +152,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="WebConnectionStrings_Dev.config" />
     <None Include="Views\Metrics\Index.cshtml" />
+    <Content Include="WebAppSettings_Dev.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
