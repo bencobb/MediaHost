@@ -11,8 +11,8 @@ namespace MediaHost.Domain.Models
         [Key]
         public long Id { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage = "Exception: EntityId Required")]
-        public int EntityId { get; set; }
+        [Range(1, long.MaxValue, ErrorMessage = "Exception: EntityId Required")]
+        public long EntityId { get; set; }
         
         [Required(AllowEmptyStrings = false, ErrorMessage = "Exception: Group Name Required")]
         public string Name { get; set; }

@@ -61,6 +61,7 @@
     <Compile Include="Models\Entity.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\IgnorePropertyAttribute.cs" />
     <Compile Include="Repository\Dapper\MySql\DbRepository.cs" />
     <Compile Include="Repository\Dapper\ProxyGenerator.cs" />
     <Compile Include="Repository\Dapper\SqlMapper.cs" />

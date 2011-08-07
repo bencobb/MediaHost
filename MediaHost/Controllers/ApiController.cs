@@ -20,11 +20,6 @@ namespace MediaHost.Controllers
 
         public string Index()
         {
-            bool t = true;
-            while(t)
-            {
-                System.Threading.Thread.Sleep(2000);
-            }
             return "";
         }
 
@@ -67,9 +62,21 @@ namespace MediaHost.Controllers
 
             if (IsValid(mediaFile))
             {
-                string relativePath = _storage.StoreFile(file.InputStream);
+                mediaFile.ContentLength = file.ContentLength;
+                mediaFile.ContentType = file.ContentType;
+                mediaFile.FileName = file.FileName;
                 
-                mediaFile.RelativeFilePath = relativePath;
+                if (file.ContentType == "video/mp4" || file.ContentType == "audio/mp3")
+                {
+                    mediaFile.RelativeFilePath = _storage.StoreStreamingFile(file.InputStream, file.ContentType);
+                    mediaFile.IsStreaming = true;
+                }
+                else
+                {
+                    mediaFile.RelativeFilePath = _storage.StoreFile(file.InputStream);
+                    mediaFile.IsStreaming = false;
+                }
+
                 mediaFile = _dbRepository.Insert(mediaFile);
             }
 

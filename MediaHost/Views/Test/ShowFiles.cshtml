@@ -1,0 +1,59 @@
+﻿@model MediaHost.Domain.Models.MediaFile
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>ShowFiles</title>
+</head>
+<body>
+    
+    @if (Model.IsStreaming)
+    {
+        string fileType = Model.ContentType.Split('/').LastOrDefault();
+        
+        <script type='text/javascript' src='/Content/JW/jwplayer.js'></script>
+        <div id='mediaspace'>This text will be replaced</div>
+
+        if (fileType.ToLower() == "mp3")
+        {
+            string file = Model.RelativeFilePath;
+            
+            <script type='text/javascript'>
+                jwplayer('mediaspace').setup({
+                    'flashplayer': '/Content/JW/player.swf',
+                    'file': '@file',
+                    'streamer': '@MediaHost.Domain.Helper.AppConfig.StreamingServer',
+                    'controlbar': 'bottom',
+                    'height': '24'
+                });
+            </script>
+        }
+        else if (fileType.ToLower() == "mp4")
+        {
+            string file = "mp4:" + Model.RelativeFilePath;
+        
+            <script type='text/javascript'>
+                jwplayer('mediaspace').setup({
+                    'flashplayer': '/Content/JW/player.swf',
+                    'file': '@file',
+                    'streamer': '@MediaHost.Domain.Helper.AppConfig.StreamingServer',
+                    'controlbar': 'bottom'
+                });
+            </script>
+        }
+    }
+    else
+    {
+        <div>
+            <img src="@ViewBag.Url" />
+        </div>
+    }
+
+    
+</body>
+</html>

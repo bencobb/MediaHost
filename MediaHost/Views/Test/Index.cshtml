@@ -1,0 +1,26 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Index</title>
+</head>
+<body>
+    <div>
+        <form enctype="multipart/form-data" action="/API/AddFile" method="POST">
+            <div>EntityId: </div> 
+            <input type="text" name="EntityId" />
+            <br />
+            <div>Name: </div> 
+            <input type="text" name="Name" />
+            <br />
+            <input type="file" name="file" />
+            <br />
+            <input type="submit" />
+        </form>
+    </div>
+</body>
+</html>

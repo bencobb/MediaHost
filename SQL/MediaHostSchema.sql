@@ -50,7 +50,7 @@ CREATE TABLE `group` (
   `Name` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`Id`),
   KEY `EntityId` (`EntityId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -63,11 +63,15 @@ DROP TABLE IF EXISTS `mediafile`;
 CREATE TABLE `mediafile` (
   `Id` bigint(20) NOT NULL AUTO_INCREMENT,
   `EntityId` bigint(20) DEFAULT NULL,
-  `Name` varchar(45) DEFAULT NULL,
+  `Name` varchar(100) DEFAULT NULL,
   `RelativeFilePath` varchar(500) DEFAULT NULL,
+  `ContentLength` int(11) DEFAULT NULL,
+  `ContentType` varchar(100) DEFAULT NULL,
+  `FileName` varchar(100) DEFAULT NULL,
+  `IsStreaming` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`Id`),
   KEY `EntityId` (`EntityId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -83,7 +87,7 @@ CREATE TABLE `playlist` (
   `Name` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`Id`),
   KEY `EntityId` (`EntityId`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -99,4 +103,4 @@ CREATE TABLE `playlist` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2011-08-05 14:37:12
+-- Dump completed on 2011-08-07  0:20:37

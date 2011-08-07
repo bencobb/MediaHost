@@ -48,7 +48,8 @@ namespace MediaHost.Domain.Repository.Dapper
                 return TypeProperties[type.TypeHandle];
             }
 
-            var properties = type.GetProperties();
+            var properties = type.GetProperties().Where(w => w.GetCustomAttributes(typeof(IgnorePropertyAttribute), true).Count() == 0);
+
             TypeProperties[type.TypeHandle] = properties;
             return properties;
         }
@@ -133,7 +134,7 @@ namespace MediaHost.Domain.Repository.Dapper
                     name = tableattr.Name;
                 TypeTableName[type.TypeHandle] = name;
             }
-            return name;
+            return "`" + name + "`";
         }
         
         /// <summary>
