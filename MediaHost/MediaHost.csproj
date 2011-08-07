@@ -157,8 +157,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="WebConnectionStrings_Dev.config" />
-    <Content Include="WebAppSettings_HIDE.config" />
-    <Content Include="WebConnectionStrings_HIDE.config" />
     <None Include="Views\Metrics\Index.cshtml" />
     <Content Include="WebAppSettings_Dev.config" />
     <Content Include="Views\Test\Index.cshtml" />
