@@ -6,12 +6,15 @@ using System.Timers;
 using System.Web;
 using System.Web.Mvc;
 using MediaHost.Helpers;
+using MediaHost.Domain.Helper;
 using PerformanceCounter = MediaHost.Helpers.PerformanceCounter;
 
 namespace MediaHost.Controllers
 {
-    public sealed class PerformanceAttribute : FilterAttribute, IActionFilter, IResultFilter, IExceptionFilter
+    public sealed class BaseAttribute : FilterAttribute, IActionFilter, IResultFilter, IExceptionFilter
     {
+        public bool Authorize { get; set; }
+
         private string _actionName;
         private string _controllerName;
         private string _userName;
@@ -21,8 +24,9 @@ namespace MediaHost.Controllers
 
         public void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            
             _stopWatch = Stopwatch.StartNew();
+
+            AuthorizeIfNeeded(filterContext);
 
             _actionName = filterContext.ActionDescriptor.ActionName;
             _controllerName = filterContext.Controller.GetType().Name;
@@ -32,6 +36,20 @@ namespace MediaHost.Controllers
 
             _busyKey = Guid.NewGuid().ToString("N");
             PerformanceCounter.LogBusyQueue(_busyKey, _actionName, _controllerName, _userName);
+        }
+
+        private void AuthorizeIfNeeded(ActionExecutingContext filterContext)
+        {
+            if (Authorize)
+            {
+                string user = filterContext.HttpContext.Request["user"];
+                string pass = filterContext.HttpContext.Request["pass"];
+
+                if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass) || user.ToLower() != AppConfig.AdminUser.ToLower() || pass != AppConfig.AdminPassword)
+                {
+                    throw new Exception("Authentication Failed");
+                }
+            }
         }
 
         public void OnActionExecuted(ActionExecutedContext filterContext)

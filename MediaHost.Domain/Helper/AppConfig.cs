@@ -48,5 +48,21 @@ namespace MediaHost.Domain.Helper
                 return ConfigurationManager.AppSettings["StreamingServer"];
             }
         }
+
+        public static string AdminUser
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["AdminUser"];
+            }
+        }
+
+        public static string AdminPassword
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["AdminPassword"];
+            }
+        }
     }
 }

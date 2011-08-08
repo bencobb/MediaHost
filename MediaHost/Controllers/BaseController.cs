@@ -6,7 +6,6 @@ using MediaHost.Helpers;
 
 namespace MediaHost.Controllers
 {
-    [Performance]
     public class BaseController : Controller
     {
         public bool RunValidationForTest = false;

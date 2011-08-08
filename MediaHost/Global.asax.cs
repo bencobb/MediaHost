@@ -26,7 +26,7 @@ namespace MediaHost
             routes.MapRoute(
                 "Default", // Route name
                 "{controller}/{action}/{id}", // URL with parameters
-                new { controller = "Api", action = "Index", id = UrlParameter.Optional } // Parameter defaults
+                new { controller = "Test", action = "Index", id = UrlParameter.Optional } // Parameter defaults
             );
 
         }

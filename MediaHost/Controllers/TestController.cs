@@ -10,6 +10,7 @@ using MediaHost.Domain.Storage;
 
 namespace MediaHost.Controllers
 {
+    [Base]
     public class TestController : BaseController
     {
         //

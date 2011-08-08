@@ -7,6 +7,7 @@ using MediaHost.Domain.Storage;
 
 namespace MediaHost.Controllers
 {
+    [Base(Authorize=true)]
     public class ApiController : BaseController
     {
         private readonly IDbRepository _dbRepository;
