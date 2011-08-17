@@ -7,9 +7,9 @@ namespace MediaHost.Domain.Repository
     [AttributeUsage(
         AttributeTargets.Property,
         AllowMultiple = false)]
-    public class IgnorePropertyAttribute : System.Attribute
+    public class IgnoreActiveRecordAttribute : System.Attribute
     {
-        public IgnorePropertyAttribute()
+        public IgnoreActiveRecordAttribute()
         {
 
         }

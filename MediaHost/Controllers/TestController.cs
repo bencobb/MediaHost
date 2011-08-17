@@ -26,7 +26,11 @@ namespace MediaHost.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            var model = new ViewModel.MediaFileView.Add();
+            model.EntityId = 35;
+            model.Playlists = _dbRepository.GetPlaylists_ByEntity(model.EntityId);
+
+            return View(model);
         }
 
         public ActionResult ShowFiles(int id)

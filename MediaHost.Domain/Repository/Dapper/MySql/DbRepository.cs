@@ -66,5 +66,42 @@ namespace MediaHost.Domain.Repository.Dapper.MySql
 
             return retval;
         }
+
+        public Playlist GetPlaylist(long id)
+        {
+            Playlist retval = null;
+
+            var sql = 
+            @"select * from playlist where Id = @playlistid
+            select * from mediafile where Id in (select MediaFileId from playlist_mediafile where PlaylistId = @playlistid)";
+
+            using (_conn = new MySqlConnection(ConnectionString))
+            {
+                using (var multi = _conn.QueryMultiple(sql, new { playlistid = id }))
+                {
+                    _conn.Open();
+
+                    retval = multi.Read<Playlist>().Single();
+                    retval.Files = multi.Read<MediaFile>().ToList();
+                }
+            }
+
+            return retval;
+        }
+
+        public IEnumerable<Playlist> GetPlaylists_ByEntity(long entityId)
+        {
+            IEnumerable<Playlist> retval;
+
+            using (_conn = new MySqlConnection(ConnectionString))
+            {
+                _conn.Open();
+
+                var sql = @"select * from playlist where EntityId = @id";
+                retval = _conn.Query<Playlist>(sql, new { id = entityId });
+            }
+
+            return retval; 
+        }
     }
 }

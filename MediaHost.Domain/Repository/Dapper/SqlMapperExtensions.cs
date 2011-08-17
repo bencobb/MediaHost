@@ -48,7 +48,7 @@ namespace MediaHost.Domain.Repository.Dapper
                 return TypeProperties[type.TypeHandle];
             }
 
-            var properties = type.GetProperties().Where(w => w.GetCustomAttributes(typeof(IgnorePropertyAttribute), true).Count() == 0);
+            var properties = type.GetProperties().Where(w => w.GetCustomAttributes(typeof(IgnoreActiveRecordAttribute), true).Count() == 0);
 
             TypeProperties[type.TypeHandle] = properties;
             return properties;

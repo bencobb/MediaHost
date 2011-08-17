@@ -12,6 +12,8 @@ namespace MediaHost.Domain.Repository
         T Find<T>(long id) where T : class, IActiveRecord;
         T Insert<T>(T record) where T: class, IActiveRecord;
         bool Update<T>(T record) where T : class, IActiveRecord;
-        
+
+        Playlist GetPlaylist(long id);
+        IEnumerable<Playlist> GetPlaylists_ByEntity(long entityId);
     }
 }

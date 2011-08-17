@@ -153,7 +153,7 @@ namespace MediaHost.Spec.Steps
         {
             _mockIDbRepository.Setup(m => m.Insert(_file)).Returns(new MediaFile { Id = 1, EntityId = _file.EntityId, Name = _file.Name, RelativeFilePath = "/something/file.vid" });
 
-            var contentResult = _apiController.AddFile(_file, _postedFile);
+            var contentResult = _apiController.AddFile(_file, 0, _postedFile);
 
             LoadObject<MediaFile>(contentResult, ref _file);
         }

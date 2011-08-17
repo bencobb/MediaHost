@@ -1,4 +1,6 @@
-﻿@{
+﻿@model MediaHost.ViewModel.MediaFileView.Add
+
+@{
     Layout = null;
 }
 
@@ -9,13 +11,19 @@
     <title>Index</title>
 </head>
 <body>
+    <h1>Add File</h1>
     <div>
         <form enctype="multipart/form-data" action="/API/AddFile" method="POST">
+            @Html.Hidden("user", MediaHost.Domain.Helper.AppConfig.AdminUser);
+            @Html.Hidden("pass", MediaHost.Domain.Helper.AppConfig.AdminPassword);
             <div>EntityId: </div> 
             <input type="text" name="EntityId" />
             <br />
             <div>Name: </div> 
             <input type="text" name="Name" />
+            <br />
+            <div>PlayList: </div>
+            @Html.DropDownList("playlistId", Model.Playlists_ListItem)
             <br />
             <input type="file" name="file" />
             <br />

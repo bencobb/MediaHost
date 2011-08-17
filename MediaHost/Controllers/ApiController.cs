@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using MediaHost.Domain.Models;
 using MediaHost.Domain.Repository;
 using MediaHost.Domain.Storage;
+using System.Collections.Generic;
 
 namespace MediaHost.Controllers
 {
@@ -44,6 +45,7 @@ namespace MediaHost.Controllers
             return ContentResult(group);
         }
 
+        #region Playlist
         public ContentResult AddPlaylist(Playlist playlist)
         {
             if (IsValid(playlist))
@@ -54,7 +56,22 @@ namespace MediaHost.Controllers
             return ContentResult(playlist);
         }
 
-        public ContentResult AddFile(MediaFile mediaFile, HttpPostedFileBase file)
+        public ContentResult GetPlaylist(long id)
+        {
+            Playlist playList = _dbRepository.GetPlaylist(id);
+
+            return ContentResult(playList);
+        }
+
+        public ContentResult GetPlaylists_ByEntity(long entityId)
+        {
+            IEnumerable<Playlist> playList = _dbRepository.GetPlaylists_ByEntity(entityId);
+
+            return ContentResult(playList);
+        }
+        #endregion
+
+        public ContentResult AddFile(MediaFile mediaFile, long playlistId, HttpPostedFileBase file)
         {
             if (file == null || file.ContentLength == 0)
             {
@@ -79,6 +96,12 @@ namespace MediaHost.Controllers
                 }
 
                 mediaFile = _dbRepository.Insert(mediaFile);
+
+                if (playlistId != 0)
+                {
+                    var playlist_mediafile = new Playlist_MediaFile { MediaFileId = mediaFile.Id, PlaylistId = playlistId };
+                    _dbRepository.Insert(playlist_mediafile);
+                }
             }
 
             return ContentResult(mediaFile);

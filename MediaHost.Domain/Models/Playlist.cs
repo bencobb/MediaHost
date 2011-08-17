@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 
+using MediaHost.Domain.Repository;
+
 namespace MediaHost.Domain.Models
 {
     public class Playlist : IActiveRecord
@@ -17,5 +19,7 @@ namespace MediaHost.Domain.Models
         [Required(AllowEmptyStrings = false, ErrorMessage = "Exception: Playlist Name Required")]
         public string Name { get; set; }
 
+        [IgnoreActiveRecord]
+        public List<MediaFile> Files { get; set; }
     }
 }
