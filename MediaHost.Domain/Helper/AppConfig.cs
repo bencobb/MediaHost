@@ -33,14 +33,6 @@ namespace MediaHost.Domain.Helper
             }
         }
 
-        public static string AWS_BucketStreaming
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["AWS_BucketStreaming"];
-            }
-        }
-
         public static string StreamingServer
         {
             get

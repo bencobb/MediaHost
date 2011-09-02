@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Collections.Concurrent;
+using MediaHost.Domain.Repository.Dapper;
 
 namespace MediaHost.Domain.Repository.Dapper
 {
@@ -18,8 +19,29 @@ namespace MediaHost.Domain.Repository.Dapper
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, string> GetQueries = new ConcurrentDictionary<RuntimeTypeHandle, string>();
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, string> TypeTableName = new ConcurrentDictionary<RuntimeTypeHandle, string>();
 
+        public static IEnumerable<TFirst> Map<TFirst, TSecond, TKey>(this SqlMapper.GridReader reader, Func<TFirst, TKey> firstKey, Func<TSecond, TKey> secondKey, Action<TFirst, IEnumerable<TSecond>> addChildren)
+        {
+            var first = reader.Read<TFirst>().ToList();
+            var childMap = reader
+                .Read<TSecond>()
+                .GroupBy(s => secondKey(s))
+                .ToDictionary(g => g.Key, g => g.AsEnumerable());
+
+            foreach (var item in first)
+            {
+                IEnumerable<TSecond> children;
+                if (childMap.TryGetValue(firstKey(item), out children))
+                {
+                    addChildren(item, children);
+                }
+            }
+
+            return first;
+        }
+
         private static IEnumerable<PropertyInfo> KeyPropertiesCache(Type type)
         {
+            
             if (KeyProperties.ContainsKey(type.TypeHandle))
             {
                 return KeyProperties[type.TypeHandle];
@@ -111,6 +133,30 @@ namespace MediaHost.Domain.Repository.Dapper
             {
                 obj = connection.Query<T>(sql, dynParms).FirstOrDefault();
             }
+            return obj;
+        }
+
+        /// <summary>
+        /// Returns a single entity by a single id from table "Ts". T must be of interface type. 
+        /// Id must be marked with [Key] attribute.
+        /// Created entity is tracked/intercepted for changes and used by the Update() extension. 
+        /// </summary>
+        /// <typeparam name="T">Interface type to create and populate</typeparam>
+        /// <param name="connection">Open SqlConnection</param>
+        /// <param name="id">Id of the entity to get, must be marked with [Key] attribute</param>
+        /// <returns>Entity of T</returns>
+        public static IEnumerable<T> GetAll<T>(this IDbConnection connection) where T : class
+        {
+            var type = typeof(T);
+            
+            var name = GetTableName(type);
+            
+            string sql = "select * from " + name;
+                
+            IEnumerable<T> obj = null;
+
+            obj = connection.Query<T>(sql);
+            
             return obj;
         }
 

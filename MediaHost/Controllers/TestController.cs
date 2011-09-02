@@ -28,7 +28,7 @@ namespace MediaHost.Controllers
         {
             var model = new ViewModel.MediaFileView.Add();
             model.EntityId = 35;
-            model.Playlists = _dbRepository.GetPlaylists_ByEntity(model.EntityId);
+            model.Playlists = _dbRepository.GetPlaylists_ByEntity(model.EntityId, false);
 
             return View(model);
         }
@@ -39,5 +39,7 @@ namespace MediaHost.Controllers
             
             return View(data);
         }
+
+        
     }
 }

@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using MediaHost.Domain.IOC;
 using MediaHost.Helpers;
+using MediaHost.Domain.Helper;
+using MediaHost.Domain.Cache;
 
 namespace MediaHost
 {
@@ -40,6 +42,8 @@ namespace MediaHost
             
             RegisterGlobalFilters(GlobalFilters.Filters);
             RegisterRoutes(RouteTable.Routes);
+
+            MemoryCacheEngine.CacheAll();
         }
     }
 }

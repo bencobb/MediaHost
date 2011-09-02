@@ -20,6 +20,6 @@ namespace MediaHost.Domain.Models
         public string Name { get; set; }
 
         [IgnoreActiveRecord]
-        public List<MediaFile> Files { get; set; }
+        public IEnumerable<MediaFile> Files { get; set; }
     }
 }

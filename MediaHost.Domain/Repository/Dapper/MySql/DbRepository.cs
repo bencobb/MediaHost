@@ -4,7 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Text;
-
+using System.Transactions;
 
 using MediaHost.Domain.Models;
 using MySql.Data.MySqlClient;
@@ -41,6 +41,18 @@ namespace MediaHost.Domain.Repository.Dapper.MySql
             return retval;
         }
 
+        public IEnumerable<T> GetAll<T>() where T : class, IActiveRecord
+        {
+            IEnumerable<T> retval;
+            using (_conn = new MySqlConnection(ConnectionString))
+            {
+                _conn.Open();
+                retval = _conn.GetAll<T>();
+            }
+
+            return retval;
+        }
+
         public T Insert<T>(T record) where T : class, IActiveRecord
         {
             using (_conn = new MySqlConnection(ConnectionString))
@@ -62,6 +74,19 @@ namespace MediaHost.Domain.Repository.Dapper.MySql
             {
                 _conn.Open();
                 retval = _conn.Update(record);
+            }
+
+            return retval;
+        }
+
+        public bool Remove<T>(T obj) where T : class, IActiveRecord
+        {
+            bool retval = false;
+
+            using (_conn = new MySqlConnection(ConnectionString))
+            {
+                _conn.Open();
+                retval = _conn.Delete(obj);
             }
 
             return retval;
@@ -89,7 +114,7 @@ namespace MediaHost.Domain.Repository.Dapper.MySql
             return retval;
         }
 
-        public IEnumerable<Playlist> GetPlaylists_ByEntity(long entityId)
+        public IEnumerable<Playlist> GetPlaylists_ByEntity(long entityId, bool includeFiles)
         {
             IEnumerable<Playlist> retval;
 
@@ -97,8 +122,23 @@ namespace MediaHost.Domain.Repository.Dapper.MySql
             {
                 _conn.Open();
 
-                var sql = @"select * from playlist where EntityId = @id";
-                retval = _conn.Query<Playlist>(sql, new { id = entityId });
+                
+
+                if (includeFiles)
+                {
+                    var sql = @"select * from playlist where EntityId = @id ;
+                             select a.*, b.PlaylistId from mediafile a join playlist_mediafile b on a.Id = b.MediaFileId where a.EntityId = @id ;";
+
+                    retval = _conn.QueryMultiple(sql, new { id = entityId }).Map<Playlist, MediaFile, long>(
+                        a => a.Id, b => b.PlaylistId, (c, bees) => c.Files = bees);
+                }
+                else
+                {
+                    var sql = @"select * from playlist where EntityId = @id";
+                    retval = _conn.Query<Playlist>(sql, new { id = entityId });
+                }
+
+                
             }
 
             return retval; 

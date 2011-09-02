@@ -21,6 +21,7 @@ namespace MediaHost.Domain.Repository.Dapper
 {
     public static partial class SqlMapper
     {
+
         public interface IDynamicParameters
         {
             void AddParameters(IDbCommand command);
@@ -328,6 +329,9 @@ this IDbConnection cnn, string sql, dynamic param = null, IDbTransaction transac
             info = GetCacheInfo(identity);
             return ExecuteCommand(cnn, transaction, sql, info.ParamReader, (object)param, commandTimeout, commandType);
         }
+
+
+
 #if !CSHARP30
         /// <summary>
         /// Return a list of dynamic objects, reader is closed after the call

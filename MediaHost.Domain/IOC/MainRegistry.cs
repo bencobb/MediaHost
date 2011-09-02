@@ -5,6 +5,7 @@ using MediaHost.Domain.Storage;
 using MySql.Data.MySqlClient;
 using StructureMap.Configuration.DSL;
 using StructureMap.Pipeline;
+using MediaHost.Domain.Cache;
 
 namespace MediaHost.Domain.IOC
 {
@@ -16,7 +17,6 @@ namespace MediaHost.Domain.IOC
             For<IDbConnection>()
                 .Use<MySqlConnection>().SetValue(typeof(string), ConfigurationManager.ConnectionStrings["MySql"].ConnectionString, CannotFindProperty.ThrowException);
             For<IStorage>().Use<StorageS3>();
-            
         }
     }
 }

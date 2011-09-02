@@ -37,7 +37,7 @@ namespace MediaHost.Spec.Steps
             _mockHttpPost.SetupGet(s => s.ContentLength).Returns(1);
 
             _mockStorage = new Mock<IStorage>();
-            _mockStorage.Setup(s => s.StoreFile(_mockHttpPost.Object.InputStream)).Returns("/something/file.vid");
+            _mockStorage.Setup(s => s.StoreFile(_mockHttpPost.Object.InputStream, "contentType")).Returns("/something/file.vid");
 
             _apiController = new ApiController(_mockIDbRepository.Object, _mockStorage.Object);
             _apiController.RunValidationForTest = true;
