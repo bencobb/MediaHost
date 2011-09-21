@@ -30,6 +30,8 @@ namespace MediaHost.Domain.Storage
             return key;
         }
 
+        //TODO: See if this works for streaming private files
+        //http://anthonyvscode.com/2011/01/11/using-amazon-s3-cloudfront-to-distribute-your-private-files/
         //public string StoreStreamingFile(Stream stream, string contentType)
         //{
         //    string key = Guid.NewGuid().ToString("N") + "." + contentType.Split('/').LastOrDefault();

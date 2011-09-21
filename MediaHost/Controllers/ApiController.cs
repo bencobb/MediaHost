@@ -126,16 +126,6 @@ namespace MediaHost.Controllers
                 mediaFile.ContentType = file.ContentType;
                 mediaFile.FileName = file.FileName;
 
-                //MemoryStream ms = new MemoryStream();
-                //byte[] bArr = new byte[4096];
-                //int bytesRead = 0;
-                //file.InputStream.Position = 0;
-
-                //while((bytesRead = file.InputStream.Read(bArr, 0, 4096)) > 0)
-                //{
-                //    ms.Write(bArr, 0, bytesRead);
-                //}
-
                 if (file.ContentType == "video/mp4" || file.ContentType == "audio/mp3" || file.ContentType == "application/octet-stream")
                 {
                     mediaFile.IsStreaming = true;
