@@ -1,16 +1,14 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Transactions;
 using System.Web;
 using System.Web.Mvc;
 using MediaHost.Domain.Models;
 using MediaHost.Domain.Repository;
 using MediaHost.Domain.Storage;
-using System.Collections.Generic;
-using System.IO;
-using System.Transactions;
 
 namespace MediaHost.Controllers
 {
-    [Base(Authorize=true)]
+    [Base(Authorize = true)]
     public class ApiController : BaseController
     {
         private readonly IDbRepository _dbRepository;
@@ -27,9 +25,9 @@ namespace MediaHost.Controllers
             return "";
         }
 
-        public ContentResult AddEntity (Entity entity)
+        public ContentResult AddEntity(Entity entity)
         {
-            if(IsValid(entity))
+            if (IsValid(entity))
             {
                 entity = _dbRepository.Insert(entity);
             }
@@ -48,14 +46,37 @@ namespace MediaHost.Controllers
         }
 
         #region Playlist
+
         public ContentResult AddPlaylist(Playlist playlist)
         {
             if (IsValid(playlist))
             {
-                playlist = _dbRepository.Insert(playlist);
+                if (playlist.Id == 0)
+                    playlist = _dbRepository.Insert(playlist);
+                else
+                {
+                    if (_dbRepository.Update(playlist))
+                    {
+                        playlist = _dbRepository.GetPlaylist(playlist.Id);
+                    }
+                }
             }
 
             return ContentResult(playlist);
+        }
+
+        public ContentResult DeletePlaylist(long id)
+        {
+            bool success = false;
+
+            Playlist playlist = _dbRepository.GetPlaylist(id);
+
+            if (playlist != null)
+            {
+                success = _dbRepository.Remove(playlist);
+            }
+
+            return ContentResult(success);
         }
 
         public ContentResult GetPlaylist(long id)
@@ -65,9 +86,9 @@ namespace MediaHost.Controllers
             return ContentResult(playList);
         }
 
-        public ContentResult GetPlaylists_ByEntity(long entityId)
+        public ContentResult GetPlaylists_ByEntity(long entityId, bool includeFile = true)
         {
-            IEnumerable<Playlist> playLists = _dbRepository.GetPlaylists_ByEntity(entityId, true);
+            IEnumerable<Playlist> playLists = _dbRepository.GetPlaylists_ByEntity(entityId, includeFile);
 
             foreach (var playlist in playLists)
             {
@@ -83,7 +104,13 @@ namespace MediaHost.Controllers
             return ContentResult(playLists);
         }
 
-        #endregion
+        public ContentResult GetPlaylists_ByPlaylistType(long entityId, int type)
+        {
+            IEnumerable<Playlist> playLists = _dbRepository.GetPlaylists_ByPlaylistType(entityId, type);
+            return ContentResult(playLists);
+        }
+
+        #endregion Playlist
 
         public ContentResult RemoveFile(long id)
         {
@@ -102,7 +129,7 @@ namespace MediaHost.Controllers
                     {
                         success = _storage.RemoveFile(fileUrl);
                     }
-                    
+
                     if (success)
                     {
                         scope.Complete();
@@ -136,7 +163,7 @@ namespace MediaHost.Controllers
                 }
 
                 mediaFile.RelativeFilePath = _storage.StoreFile(file.InputStream, file.ContentType);
-                    
+
                 mediaFile = _dbRepository.Insert(mediaFile);
                 //ms.Close();
 

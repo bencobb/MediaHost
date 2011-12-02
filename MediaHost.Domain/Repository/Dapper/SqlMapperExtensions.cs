@@ -1,17 +1,14 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Collections.Concurrent;
-using MediaHost.Domain.Repository.Dapper;
 
 namespace MediaHost.Domain.Repository.Dapper
 {
-
     public static class SqlMapperExtensions
     {
         private static readonly ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>> KeyProperties = new ConcurrentDictionary<RuntimeTypeHandle, IEnumerable<PropertyInfo>>();
@@ -41,7 +38,6 @@ namespace MediaHost.Domain.Repository.Dapper
 
         private static IEnumerable<PropertyInfo> KeyPropertiesCache(Type type)
         {
-            
             if (KeyProperties.ContainsKey(type.TypeHandle))
             {
                 return KeyProperties[type.TypeHandle];
@@ -77,9 +73,9 @@ namespace MediaHost.Domain.Repository.Dapper
         }
 
         /// <summary>
-        /// Returns a single entity by a single id from table "Ts". T must be of interface type. 
+        /// Returns a single entity by a single id from table "Ts". T must be of interface type.
         /// Id must be marked with [Key] attribute.
-        /// Created entity is tracked/intercepted for changes and used by the Update() extension. 
+        /// Created entity is tracked/intercepted for changes and used by the Update() extension.
         /// </summary>
         /// <typeparam name="T">Interface type to create and populate</typeparam>
         /// <param name="connection">Open SqlConnection</param>
@@ -90,7 +86,7 @@ namespace MediaHost.Domain.Repository.Dapper
             var type = typeof(T);
             string sql;
             if (!GetQueries.TryGetValue(type.TypeHandle, out sql))
-            { 
+            {
                 var keys = KeyPropertiesCache(type);
                 if (keys.Count() > 1)
                     throw new DataException("Get<T> only supports an entity with a single [Key] property");
@@ -101,12 +97,12 @@ namespace MediaHost.Domain.Repository.Dapper
 
                 var name = GetTableName(type);
 
-                // TODO: pluralizer 
-                // TODO: query information schema and only select fields that are both in information schema and underlying class / interface 
+                // TODO: pluralizer
+                // TODO: query information schema and only select fields that are both in information schema and underlying class / interface
                 sql = "select * from " + name + " where " + onlyKey.Name + " = @id";
                 GetQueries[type.TypeHandle] = sql;
             }
-           
+
             var dynParms = new DynamicParameters();
             dynParms.Add("@id", id);
 
@@ -136,28 +132,62 @@ namespace MediaHost.Domain.Repository.Dapper
             return obj;
         }
 
-        /// <summary>
-        /// Returns a single entity by a single id from table "Ts". T must be of interface type. 
-        /// Id must be marked with [Key] attribute.
-        /// Created entity is tracked/intercepted for changes and used by the Update() extension. 
-        /// </summary>
-        /// <typeparam name="T">Interface type to create and populate</typeparam>
-        /// <param name="connection">Open SqlConnection</param>
-        /// <param name="id">Id of the entity to get, must be marked with [Key] attribute</param>
-        /// <returns>Entity of T</returns>
-        public static IEnumerable<T> GetAll<T>(this IDbConnection connection) where T : class
+        public static IEnumerable<T> GetAll<T>(this IDbConnection connection, string where = "", dynamic whereParam = null, int page = 0, int pagesize = 0) where T : class
+        {
+            string sql, countSql;
+            BuildQuery<T>(out sql, out countSql, where, page, pagesize);
+
+            return connection.Query<T>(sql, whereParam as object);
+        }
+
+        public static IEnumerable<T> GetAll<T>(this IDbConnection connection, out int recordCount, string where = "", dynamic whereParam = null, int page = 0, int pagesize = 0, string orderBy = "", bool isOrderByAsc = true) where T : class
+        {
+            string sql, countSql;
+            BuildQuery<T>(out sql, out countSql, where, page, pagesize, orderBy, isOrderByAsc);
+
+            IEnumerable<T> obj = connection.Query<T>(sql, whereParam as object);
+            recordCount = (int)connection.Query<long>(countSql, whereParam as object).FirstOrDefault();
+
+            return obj;
+        }
+
+        public static void BuildQuery<T>(out string sql, out string countSql, string where = "", int page = 0, int pagesize = 0, string orderBy = "", bool isOrderByAsc = true) where T : class
         {
             var type = typeof(T);
-            
             var name = GetTableName(type);
-            
-            string sql = "select * from " + name;
-                
-            IEnumerable<T> obj = null;
+            sql = "select * from " + name;
+            countSql = "select count(*) from " + name;
+            BuildPagedQuery(ref sql, ref countSql, where, page, pagesize, orderBy, isOrderByAsc);
+        }
 
-            obj = connection.Query<T>(sql);
-            
-            return obj;
+        public static void BuildPagedQuery(ref string sql, ref string countSql, string where = "", int page = 0, int pagesize = 0, string orderBy = "", bool isOrderByAsc = true)
+        {
+            //Add Where conditions
+            if (!string.IsNullOrEmpty(where))
+            {
+                if (!where.Trim().StartsWith("where"))
+                    where = "where " + where;
+
+                sql += " " + where;
+                countSql += " " + where;
+            }
+
+            //Add order
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                if (!orderBy.Trim().StartsWith("Order By"))
+                    orderBy = "Order By " + orderBy;
+
+                sql += " " + orderBy;
+                countSql += " " + orderBy;
+            }
+
+            if (pagesize > 0)
+            {
+                int skip = (page - 1) * pagesize;
+
+                sql += string.Format(" LIMIT {0},{1}", (skip > 0 ? skip : 0), pagesize);
+            }
         }
 
         private static string GetTableName(Type type)
@@ -171,9 +201,8 @@ namespace MediaHost.Domain.Repository.Dapper
                 }
 
                 name = type.Name.ToLower();
-                
-              
-                //NOTE: This as dynamic trick should be able to handle both our own Table-attribute as well as the one in EntityFramework 
+
+                //NOTE: This as dynamic trick should be able to handle both our own Table-attribute as well as the one in EntityFramework
                 var tableattr = type.GetCustomAttributes(false).Where(attr => attr.GetType().Name == "TableAttribute").SingleOrDefault() as
                     dynamic;
                 if (tableattr != null)
@@ -182,7 +211,7 @@ namespace MediaHost.Domain.Repository.Dapper
             }
             return "`" + name + "`";
         }
-        
+
         /// <summary>
         /// Inserts an entity into table "Ts" and returns identity id.
         /// </summary>
@@ -229,7 +258,7 @@ namespace MediaHost.Domain.Repository.Dapper
                 var r = connection.Query("select LAST_INSERT_ID() as id");
                 tx.Commit();
 
-                return (int)((dynamic)r.First()).id;
+                return (long)((dynamic)r.First()).id;
             }
         }
 
@@ -320,6 +349,7 @@ namespace MediaHost.Domain.Repository.Dapper
         {
             Name = tableName;
         }
+
         public string Name { get; private set; }
     }
 }

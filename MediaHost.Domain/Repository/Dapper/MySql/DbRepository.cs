@@ -1,25 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Transactions;
 
 using MediaHost.Domain.Models;
 using MySql.Data.MySqlClient;
-
 
 namespace MediaHost.Domain.Repository.Dapper.MySql
 {
     public class DbRepository : IDbRepository
     {
         private IDbConnection _conn;
- 
+
         private static string ConnectionString
         {
-            get 
-            { 
+            get
+            {
                 return ConfigurationManager.ConnectionStrings["MySql"].ConnectionString;
             }
         }
@@ -53,12 +49,24 @@ namespace MediaHost.Domain.Repository.Dapper.MySql
             return retval;
         }
 
+        public IEnumerable<T> GetAll<T>(out int recordCount, string where = "", dynamic param = null, int page = 0, int pagesize = 0, string orderBy = "", bool isOrderByAsc = true) where T : class, IActiveRecord
+        {
+            IEnumerable<T> retval;
+            using (_conn = new MySqlConnection(ConnectionString))
+            {
+                _conn.Open();
+                retval = _conn.GetAll<T>(out recordCount, where: where, whereParam: param as object, page: page, pagesize: pagesize, orderBy: orderBy, isOrderByAsc: isOrderByAsc);
+            }
+
+            return retval;
+        }
+
         public T Insert<T>(T record) where T : class, IActiveRecord
         {
             using (_conn = new MySqlConnection(ConnectionString))
             {
                 _conn.Open();
-                long id = _conn.Insert(record);
+                long id = (long)_conn.Insert(record);
 
                 record.Id = id;
             }
@@ -96,16 +104,15 @@ namespace MediaHost.Domain.Repository.Dapper.MySql
         {
             Playlist retval = null;
 
-            var sql = 
-            @"select * from playlist where Id = @playlistid
-            select * from mediafile where Id in (select MediaFileId from playlist_mediafile where PlaylistId = @playlistid)";
+            var sql =
+            @"select * from playlist where Id = @playlistid;
+                    select * from mediafile where Id in (select MediaFileId from playlist_mediafile where PlaylistId = @playlistid);";
 
             using (_conn = new MySqlConnection(ConnectionString))
             {
+                _conn.Open();
                 using (var multi = _conn.QueryMultiple(sql, new { playlistid = id }))
                 {
-                    _conn.Open();
-
                     retval = multi.Read<Playlist>().Single();
                     retval.Files = multi.Read<MediaFile>().ToList();
                 }
@@ -122,8 +129,6 @@ namespace MediaHost.Domain.Repository.Dapper.MySql
             {
                 _conn.Open();
 
-                
-
                 if (includeFiles)
                 {
                     var sql = @"select * from playlist where EntityId = @id ;
@@ -137,11 +142,28 @@ namespace MediaHost.Domain.Repository.Dapper.MySql
                     var sql = @"select * from playlist where EntityId = @id";
                     retval = _conn.Query<Playlist>(sql, new { id = entityId });
                 }
-
-                
             }
 
-            return retval; 
+            return retval;
         }
+
+        #region IDbRepository Members
+
+        public IEnumerable<Playlist> GetPlaylists_ByPlaylistType(long entityId, int type)
+        {
+            IEnumerable<Playlist> retval;
+
+            using (_conn = new MySqlConnection(ConnectionString))
+            {
+                _conn.Open();
+
+                var sql = @"select * from playlist where EntityId = @id and PlaylistType=@playlistType";
+                retval = _conn.Query<Playlist>(sql, new { id = entityId, playlistType = type });
+            }
+
+            return retval;
+        }
+
+        #endregion IDbRepository Members
     }
 }
