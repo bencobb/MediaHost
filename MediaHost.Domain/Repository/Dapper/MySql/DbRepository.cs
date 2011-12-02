@@ -147,6 +147,26 @@ namespace MediaHost.Domain.Repository.Dapper.MySql
             return retval;
         }
 
+        public MediaFile GetMediaFile(long id)
+        {
+            MediaFile retval = null;
+
+            var sql =
+            @"select * from mediafile where Id = @mediafileid;";
+
+            using (_conn = new MySqlConnection(ConnectionString))
+            {
+                _conn.Open();
+                using (var multi = _conn.QueryMultiple(sql, new { mediafileid = id }))
+                {
+                    retval = multi.Read<MediaFile>().Single();
+                }
+            }
+
+            return retval;
+        }
+
+
         #region IDbRepository Members
 
         public IEnumerable<Playlist> GetPlaylists_ByPlaylistType(long entityId, int type)

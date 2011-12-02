@@ -23,5 +23,7 @@ namespace MediaHost.Domain.Repository
         IEnumerable<Playlist> GetPlaylists_ByEntity(long entityId, bool includeFiles);
 
         IEnumerable<Playlist> GetPlaylists_ByPlaylistType(long entityId, int type);
+
+        MediaFile GetMediaFile(long id); 
     }
 }

@@ -142,6 +142,7 @@ namespace MediaHost.Controllers
 
         public ContentResult AddFile(MediaFile mediaFile, long playlistId, HttpPostedFileBase file)
         {
+            bool IsUpdate=mediaFile.Id > 0;
             if (file == null || file.ContentLength == 0)
             {
                 ModelState.AddModelError("FileUploaded", "Exception: File Upload Required");
@@ -161,18 +162,28 @@ namespace MediaHost.Controllers
                 {
                     mediaFile.IsStreaming = false;
                 }
-
+                if(IsUpdate)
+                    _storage.RemoveFile(mediaFile.RelativeFilePath);
                 mediaFile.RelativeFilePath = _storage.StoreFile(file.InputStream, file.ContentType);
-
-                mediaFile = _dbRepository.Insert(mediaFile);
+                if (IsUpdate)
+                    _dbRepository.Update(mediaFile);
+                else
+                    mediaFile = _dbRepository.Insert(mediaFile);
                 //ms.Close();
 
-                if (playlistId != 0)
+                if (playlistId != 0 && !IsUpdate)
                 {
                     var playlist_mediafile = new Playlist_MediaFile { MediaFileId = mediaFile.Id, PlaylistId = playlistId };
                     _dbRepository.Insert(playlist_mediafile);
                 }
             }
+
+            return ContentResult(mediaFile);
+        }
+
+        public ContentResult GetFile(long id)
+        {
+            MediaFile mediaFile = _dbRepository.GetMediaFile(id);
 
             return ContentResult(mediaFile);
         }
