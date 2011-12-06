@@ -2,7 +2,6 @@
 using System.Configuration;
 using System.Data;
 using System.Linq;
-
 using MediaHost.Domain.Models;
 using MySql.Data.MySqlClient;
 
@@ -104,9 +103,8 @@ namespace MediaHost.Domain.Repository.Dapper.MySql
         {
             Playlist retval = null;
 
-            var sql =
-            @"select * from playlist where Id = @playlistid;
-                    select * from mediafile where Id in (select MediaFileId from playlist_mediafile where PlaylistId = @playlistid);";
+            var sql = @"select * from playlist where Id = @playlistid;
+                       select * from mediafile where Id in (select MediaFileId from playlist_mediafile where PlaylistId = @playlistid);";
 
             using (_conn = new MySqlConnection(ConnectionString))
             {
@@ -147,7 +145,23 @@ namespace MediaHost.Domain.Repository.Dapper.MySql
             return retval;
         }
 
-        #region IDbRepository Members
+        public MediaFile GetMediaFile(long id)
+        {
+            MediaFile retval = null;
+
+            var sql = @"select * from mediafile where Id = @mediafileid;";
+
+            using (_conn = new MySqlConnection(ConnectionString))
+            {
+                _conn.Open();
+                using (var multi = _conn.QueryMultiple(sql, new { mediafileid = id }))
+                {
+                    retval = multi.Read<MediaFile>().Single();
+                }
+            }
+
+            return retval;
+        }
 
         public IEnumerable<Playlist> GetPlaylists_ByPlaylistType(long entityId, int type)
         {
@@ -164,6 +178,69 @@ namespace MediaHost.Domain.Repository.Dapper.MySql
             return retval;
         }
 
-        #endregion IDbRepository Members
+        public IEnumerable<Playlist> GetPlaylists_ByName(long entityId, string name)
+        {
+            IEnumerable<Playlist> retval;
+
+            using (_conn = new MySqlConnection(ConnectionString))
+            {
+                _conn.Open();
+
+                var sql = string.Format(@"select * from playlist where EntityId = {0} and name like '%{1}%'", entityId, name);
+                retval = _conn.Query<Playlist>(sql);//, new { id = entityId, name = name });
+            }
+
+            return retval;
+        }
+
+        public Playlist GetPlaylistFiles(long playlistId, Pager pager, string search = "")
+        {
+            string whereCondition = string.Empty;
+            string countSql = string.Empty;
+            SqlMapperExtensions.BuildPagedQuery(ref whereCondition, ref countSql, page: pager.PageIndex, pagesize: pager.PageSize, orderBy: pager.OrderBy, isOrderByAsc: pager.IsAsc);
+
+            whereCondition = (string.IsNullOrEmpty(search) ? string.Empty : " and  mf.name like '%" + search + "%'") + whereCondition;
+
+            Playlist retval = null;
+
+            string sql = string.Format(@"select * from playlist where Id = @playlistid;
+                       select * from mediafile mf where Id in (select MediaFileId from playlist_mediafile where PlaylistId = @playlistid) {0};", whereCondition);
+
+            using (_conn = new MySqlConnection(ConnectionString))
+            {
+                _conn.Open();
+                using (var multi = _conn.QueryMultiple(sql, new { playlistid = playlistId }))
+                {
+                    retval = multi.Read<Playlist>().Single();
+                    retval.Files = multi.Read<MediaFile>().ToList();
+                }
+            }
+
+            return retval;
+        }
+
+        public int GetTotalPlaylistFiles(long playlistId, string search)
+        {
+            int total = 0;
+
+            string whereCondition = string.IsNullOrEmpty(search) ? "" : "";
+
+            string sql = string.Format(@"SELECT * FROM mediafile m
+                                         inner join playlist_mediafile pm on m.id=pm.mediafileid
+                                         where pm.PlaylistId={0}", playlistId);
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                sql += string.Format(" and m.name like '%{0}%'", search);
+            }
+
+            using (_conn = new MySqlConnection(ConnectionString))
+            {
+                _conn.Open();
+                total = _conn.Query(sql).ToList().Count();
+            }
+
+            return total;
+        }
     }
 }

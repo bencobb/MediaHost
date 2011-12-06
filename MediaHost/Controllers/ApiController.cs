@@ -110,7 +110,15 @@ namespace MediaHost.Controllers
             return ContentResult(playLists);
         }
 
+        public ContentResult GetPlaylists_ByName(long entityId, string name)
+        {
+            IEnumerable<Playlist> playLists = _dbRepository.GetPlaylists_ByName(entityId, name);
+            return ContentResult(playLists);
+        }
+
         #endregion Playlist
+
+        #region Playlist File
 
         public ContentResult RemoveFile(long id)
         {
@@ -177,9 +185,29 @@ namespace MediaHost.Controllers
             return ContentResult(mediaFile);
         }
 
+        public ContentResult GetFile(long id)
+        {
+            MediaFile mediaFile = _dbRepository.GetMediaFile(id);
+            return ContentResult(mediaFile);
+        }
+
+        public ContentResult GetPlaylistFiles(long playlistId, Pager pager, string search)
+        {
+            Playlist playList = _dbRepository.GetPlaylistFiles(playlistId, pager, search);
+            return ContentResult(playList);
+        }
+
+        public ContentResult GetTotalPlaylistFiles(long playlistId, string search)
+        {
+            int total = _dbRepository.GetTotalPlaylistFiles(playlistId, search);
+            return ContentResult(total);
+        }
+
         public string StreamingServer()
         {
             return MediaHost.Domain.Helper.AppConfig.StreamingServer;
         }
+
+        #endregion Playlist File
     }
 }

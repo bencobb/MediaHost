@@ -59,6 +59,7 @@
     <Compile Include="Cache\MemoryCacheEngine.cs" />
     <Compile Include="IOC\Bootstrapper.cs" />
     <Compile Include="IOC\MainRegistry.cs" />
+    <Compile Include="Models\Pager.cs" />
     <Compile Include="Models\Playlist_MediaFile.cs" />
     <Compile Include="Models\IActiveRecord.cs" />
     <Compile Include="Models\MediaFile.cs" />
