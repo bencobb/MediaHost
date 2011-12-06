@@ -198,6 +198,7 @@ namespace MediaHost.Controllers
             return ContentResult(mediaFile);
         }
 
+<<<<<<< HEAD
        
         public ContentResult GetFile(long id)
         {
@@ -209,7 +210,13 @@ namespace MediaHost.Controllers
             return ContentResult(mediaFile);
         }
 
-       
+=======
+        public ContentResult GetFile(long id)
+        {
+            MediaFile mediaFile = _dbRepository.GetMediaFile(id);
+            return ContentResult(mediaFile);
+        }
+
         public ContentResult GetPlaylistFiles(long playlistId, Pager pager, string search)
         {
             Playlist playList = _dbRepository.GetPlaylistFiles(playlistId, pager, search);
@@ -222,6 +229,7 @@ namespace MediaHost.Controllers
             return ContentResult(total);
         }
 
+>>>>>>> c7e7371388cbff7c4d05b9040e88f8ec05c8a6a7
         public string StreamingServer()
         {
             return MediaHost.Domain.Helper.AppConfig.StreamingServer;

@@ -1,0 +1,27 @@
+﻿<appSettings>
+  <clear />
+  <add key="webpages:Version" value="1.0.0.0"/>
+  <add key="ClientValidationEnabled" value="true"/>
+  <add key="UnobtrusiveJavaScriptEnabled" value="true"/>
+
+<<<<<<< HEAD
+  <add key="AWS_Id" value="AKIAIL5PZLI76RGYXHSA"/>
+  <add key="AWS_Secret" value="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"/>
+  <add key="AWS_Bucket" value="mediahost-test"/>
+=======
+  <!--<add key="AWS_Id" value="key"/>
+  <add key="AWS_Secret" value="secret"/>
+  <add key="AWS_Bucket" value="bucket"/>-->
+
+   <add key="AWS_Id" value="AKIAIL5PZLI76RGYXHSA"/>
+   <add key="AWS_Secret" value="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"/>
+   <add key="AWS_Bucket" value="mediahost-test"/>
+
+>>>>>>> c7e7371388cbff7c4d05b9040e88f8ec05c8a6a7
+  <add key="AWS_BucketStreaming" value="streaming" />
+  <add key="StreamingServer" value="streamingserver"/>
+
+  <add key="AdminUser" value="admin"/>
+  <add key="AdminPassword" value="pass"/>
+
+</appSettings>
