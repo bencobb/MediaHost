@@ -24,6 +24,12 @@ namespace MediaHost.Domain.Repository
 
         IEnumerable<Playlist> GetPlaylists_ByPlaylistType(long entityId, int type);
 
-        MediaFile GetMediaFile(long id); 
+        IEnumerable<Playlist> GetPlaylists_ByName(long entityId, string name);
+
+        MediaFile GetMediaFile(long id);
+
+        Playlist GetPlaylistFiles(long playlistId, Pager pager, string search = "");
+
+        int GetTotalPlaylistFiles(long playlistId, string search);
     }
 }
