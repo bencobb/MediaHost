@@ -82,7 +82,13 @@ namespace MediaHost.Controllers
         public ContentResult GetPlaylist(long id)
         {
             Playlist playList = _dbRepository.GetPlaylist(id);
-
+            if (playList.Files != null)
+            {
+                foreach (var file in playList.Files)
+                {
+                    file.TemporaryUrl = _storage.GetFileUrl(file.RelativeFilePath, true);
+                }
+            }
             return ContentResult(playList);
         }
 
@@ -142,29 +148,32 @@ namespace MediaHost.Controllers
 
         public ContentResult AddFile(MediaFile mediaFile, long playlistId, HttpPostedFileBase file)
         {
-            bool IsUpdate=mediaFile.Id > 0;
-            if (file == null || file.ContentLength == 0)
+            bool IsUpdate = mediaFile.Id > 0;
+            if ((file == null || file.ContentLength == 0) && !IsUpdate)
             {
                 ModelState.AddModelError("FileUploaded", "Exception: File Upload Required");
             }
 
             if (IsValid(mediaFile))
             {
-                mediaFile.ContentLength = file.ContentLength;
-                mediaFile.ContentType = file.ContentType;
-                mediaFile.FileName = file.FileName;
+                if (file != null)
+                {
+                    mediaFile.ContentLength = file.ContentLength;
+                    mediaFile.ContentType = file.ContentType;
+                    mediaFile.FileName = file.FileName;
 
-                if (file.ContentType == "video/mp4" || file.ContentType == "audio/mp3" || file.ContentType == "application/octet-stream")
-                {
-                    mediaFile.IsStreaming = true;
+                    if (file.ContentType == "video/mp4" || file.ContentType == "audio/mp3" || file.ContentType == "application/octet-stream")
+                    {
+                        mediaFile.IsStreaming = true;
+                    }
+                    else
+                    {
+                        mediaFile.IsStreaming = false;
+                    }
+                    if (IsUpdate)
+                        _storage.RemoveFile(mediaFile.RelativeFilePath);
+                    mediaFile.RelativeFilePath = _storage.StoreFile(file.InputStream, file.ContentType);
                 }
-                else
-                {
-                    mediaFile.IsStreaming = false;
-                }
-                if(IsUpdate)
-                    _storage.RemoveFile(mediaFile.RelativeFilePath);
-                mediaFile.RelativeFilePath = _storage.StoreFile(file.InputStream, file.ContentType);
                 if (IsUpdate)
                     _dbRepository.Update(mediaFile);
                 else
@@ -181,10 +190,14 @@ namespace MediaHost.Controllers
             return ContentResult(mediaFile);
         }
 
+       
         public ContentResult GetFile(long id)
         {
             MediaFile mediaFile = _dbRepository.GetMediaFile(id);
-
+            if (mediaFile.Id > 0)
+            {
+                mediaFile.TemporaryUrl = _storage.GetFileUrl(mediaFile.RelativeFilePath, true);                
+            }
             return ContentResult(mediaFile);
         }
 
